@@ -7,11 +7,15 @@ var mysql = require('mysql');
 //npm  mySQL module
 
 
-module.exports.dbConnection = mysql.createConnection({
-	host: 'http://127.0.0.1:3000',
+var dbConnection = mysql.createConnection({
+	//host: 'http://127.0.0.1:3000',
 	user: "root",
 	password: "",
 	database: "chat"
 });
 
-module.exports.dbConnection.connect();
+dbConnection.connect();
+
+module.exports.database = dbConnection;
+
+

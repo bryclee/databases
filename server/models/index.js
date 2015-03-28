@@ -1,3 +1,4 @@
+//MODELS
 var db = require('../db');
 
 //Gives SQL commands to database
@@ -6,14 +7,43 @@ var db = require('../db');
 
 module.exports = {
   messages: {
-    get: function () {}, // a function which produces all the messages
-    post: function () {} // a function which can be used to insert a message into the database
+    get: function (req, res, callback) { // a function which produces all the messages
+    	//SQL command
+    	//callback to controller
+    	var data = "Hello from messages";
+    	callback(null, data);
+   	}, 	
+
+    post: function (req, res, callback) {// a function which can be used to insert a message into the database
+    	//Data should look like this: 
+    	//posts = {messageID: stuff, message: stuff, time: stuff, userID: number, roomID: stuff}
+    	//Name of table is Messages
+		var post = {id:1, title: "Hello my SQL from messages"};
+    	callback(null, post);
+
+
+    } 
   },
 
   users: {
     // Ditto as above.
-    get: function () {},
-    post: function () {}
+    get: function (data, res, callback) {
+    	//Query first
+    	var post = {username: data.username};
+    	db.database.query('SELECT * FROM UserIDs WHERE ?', post, callback);
+    },
+
+
+    post: function (data, res, callback) { //accepts data = req.body
+
+    	var post = {userID: data.userID, username: data.username};
+    	db.database.query('INSERT INTO UserIDs SET ?', post, callback);
+    	
+
+    	////var post = {username: testUserDude, userID: 0};
+    	//table name is UserIDs
+
+    }
   }
 };
 
