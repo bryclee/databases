@@ -11,15 +11,25 @@ module.exports = {
     	//SQL command
     	//callback to controller
     	var data = "Hello from messages";
-    	callback(null, data);
+    	db.database.query('SELECT * FROM Messages \
+    					   left outer join UserIDs on (Messages.userID = UserIDs.userID) \
+    					   order by Messages.messageID', callback);
    	}, 	
 
-    post: function (req, res, callback) {// a function which can be used to insert a message into the database
+    post: function (data, res, callback) {// a function which can be used to insert a message into the database
     	//Data should look like this: 
     	//posts = {messageID: stuff, message: stuff, time: stuff, userID: number, roomID: stuff}
     	//Name of table is Messages
-		var post = {id:1, title: "Hello my SQL from messages"};
-    	callback(null, post);
+    	console.log(data);
+		var post = {username: data.username, message: data.message, roomname: data.roomname};
+		db.database.query('INSERT INTO Rooms (roomname) values (?)', [post.roomname], function(err, roomData) {
+			if (err) throw err;
+			console.log('room data insert: ', roomData)
+			var params = [post.message, post.username, roomData.insertId];
+			console.log(params);
+			db.database.query('INSERT INTO Messages (message, userID, roomID) values \
+							   (?, (select min(userID) from UserIDs where username = ?), ?)', params, callback);
+		});
 
 
     } 

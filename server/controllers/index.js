@@ -10,18 +10,18 @@ module.exports = {
     get: function (req, res) {// a function which handles a get request for all messages
     	var status = 200;
 		models.messages.get(req, res, function(err, data){
-			   	if (err){ reject(err);}
-			   	else{res.status(status).send("Data from the messages: ", data) }
+			   	if (err){ throw(err);}
+			   	else{res.status(status).send(data) }
 					} )
 
 
     }, 
     post: function (req, res) { // a function which handles posting a message to the database
-    	console.log("Body: ", req.body);   
     	var status = 200;
-		models.messages.post(req, res, function(err, data){
-			   	if (err){ reject(err);}
-			   	else{res.status(status).send("POST from the messages: ", data) }
+
+		models.messages.post(req.body, res, function(err, data){
+			   	if (err){ throw(err);}
+			   	else{res.status(status).send(data) }
 					} )
     } 
   },
@@ -31,8 +31,6 @@ module.exports = {
     get: function (req, res) {
     	//res.send("This is a test from USERS directory");
     	var status = 200;
-    	console.log('params:', req.params);
-    	console.log('query:',req.query);
 		models.users.get(req.query, res, function(err, data){
 			   	if (err){ throw(err);}
 			   	else{
