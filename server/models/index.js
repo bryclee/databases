@@ -10,7 +10,7 @@ module.exports = {
     get: function (req, res, callback) { // a function which produces all the messages
     	//SQL command
     	//callback to controller
-    	var data = "Hello from messages";
+
     	db.database.query('SELECT * FROM Messages \
     					   left outer join UserIDs on (Messages.userID = UserIDs.userID) \
     					   order by Messages.messageID', callback);
@@ -20,18 +20,20 @@ module.exports = {
     	//Data should look like this: 
     	//posts = {messageID: stuff, message: stuff, time: stuff, userID: number, roomID: stuff}
     	//Name of table is Messages
-    	console.log(data);
+    	//console.log(data);
 		var post = {username: data.username, message: data.message, roomname: data.roomname};
+		//Needed to put post.roomname into an array
 		db.database.query('INSERT INTO Rooms (roomname) values (?)', [post.roomname], function(err, roomData) {
 			if (err) throw err;
-			console.log('room data insert: ', roomData)
+			//console.log('room data insert: ', roomData)
+			//roomID is pulled by running the INSERT on the table and the insertId also happens to track its roomID
 			var params = [post.message, post.username, roomData.insertId];
-			console.log(params);
+			//console.log(params);
+			// Nested select in second parameter to get the UserID from username
+			//It's using the params[1] (post.username) as its ? value
 			db.database.query('INSERT INTO Messages (message, userID, roomID) values \
 							   (?, (select min(userID) from UserIDs where username = ?), ?)', params, callback);
 		});
-
-
     } 
   },
 
@@ -43,12 +45,10 @@ module.exports = {
     	db.database.query('SELECT * FROM UserIDs WHERE ?', post, callback);
     },
 
-
     post: function (data, res, callback) { //accepts data = req.body
 
     	var post = {userID: data.userID, username: data.username};
     	db.database.query('INSERT INTO UserIDs SET ?', post, callback);
-    	
 
     	////var post = {username: testUserDude, userID: 0};
     	//table name is UserIDs
